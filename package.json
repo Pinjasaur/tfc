@@ -1,0 +1,15 @@
+{
+  "name": "tfc",
+  "version": "1.0.0",
+  "description": "Text-file crawler",
+  "main": "tfc.js",
+  "scripts": {
+    "start": "node tfc"
+  },
+  "author": "Paul Esch-Laurent <p@uly.io>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "node-fetch": "^2.3.0"
+  }
+}
