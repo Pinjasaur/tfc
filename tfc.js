@@ -12,14 +12,25 @@ const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const go = async res => {
 
   // HTTP status good?
-  if (!res.ok) return
+  if (!res.ok) {
+    console.log(`Crawling ${res.url}... NOT OK (${res.status})`)
+    return
+  }
 
   // Content type a text file?
-  if (!res.headers.get('content-type').toLowerCase().includes('text/plain')) return
+  if (!res.headers.get('content-type').toLowerCase().includes('text/plain')) {
+    console.log(`Crawling ${res.url}... NOT OK (${res.status})`)
+    return
+  }
 
   // Probably not an HTML document?
   const text = await res.text().catch(err => err)
-  if (/^<!doctype html/i.test(text.trim())) return
+  if (/^<!doctype html/i.test(text.trim())) {
+    console.log(`Crawling ${res.url}... NOT OK (${res.status})`)
+    return
+  }
+
+  console.log(`Crawling ${res.url}... OK (${res.status})`)
 
   stats.total++
   if (res.url.endsWith('robots.txt'))   stats.robots++
@@ -29,13 +40,22 @@ const go = async res => {
   return res.text().catch(err => err)
 }
 
-
 const files = ['/robots.txt', '/humans.txt', '/.well-known/security.txt']
 const domains = trimAndUnique(readFileSync('domains.txt').toString().split('\n'))
+
 const urls = files.reduce((acc, file) => acc.concat(domains.map(domain => `http://${domain}${file}`)), [])
 
-// No newline like console.log
-process.stdout.write(`Crawling ${domains.length} domain(s) (total of ${domains.length * files.length} request(s))...`)
+/**
+  The above code has the identical functionality as:
+
+  for (const domain of domains) {
+    for (const file of files) {
+      urls.push(`http://${domain}${file}`)
+    }
+  }
+*/
+
+console.log(`Crawling ${domains.length} domain(s) (total of ${domains.length * files.length} request(s))...`)
 
 Promise
   .all(urls.map(url =>
@@ -44,7 +64,7 @@ Promise
       .catch(err => err)
   ))
   .then(res => {
-    console.log(` done.\n`)
+    console.log(`Done.\n`)
     console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(2) * 100}% (${stats.robots} of ${domains.length})`)
     console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(2) * 100}% (${stats.humans} of ${domains.length})`)
     console.log(`security.txt:\t${(stats.security / domains.length).toFixed(2) * 100}% (${stats.security} of ${domains.length})`)
