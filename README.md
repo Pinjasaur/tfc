@@ -23,8 +23,13 @@ npm install && npm start
 
 [David][david].
 
+## License
+
+[MIT][license].
+
 
 [robots]: http://www.robotstxt.org/
 [humans]: http://humanstxt.org/
 [security]: https://securitytxt.org/
 [david]: https://github.com/davidmerfield
+[license]: https://pinjasaur.mit-license.org/@2019
