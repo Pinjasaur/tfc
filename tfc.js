@@ -8,14 +8,11 @@ const fetch = require('node-fetch')
 
 // Utils
 const trimAndUnique = arr => arr.map(i => i.trim()).filter(i => i !== "").filter((x, i, a) => a.indexOf(x) === i)
-const noop = () => {}
 const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const updateStats = async res => {
   if (!res.ok) return
-  // if (/^<!doctype html/i.test(res.))
-  const text = await res.text()
-  if (/^<!doctype html/i.test(text)) return
-  // console.log(text.trim().slice(0,10))
+  const text = await res.text().catch(err => err)
+  if (/^<!doctype html/i.test(text.trim())) return
   stats.total++
   if (res.url.endsWith('robots.txt'))   stats.robots++
   if (res.url.endsWith('humans.txt'))   stats.humans++
@@ -35,32 +32,17 @@ for (const domain of domains) {
   }
 }
 
-// fetch(url)
-//   .then(res => res.text())
-//   .catch(err => console.log(err))
-//   .then(res => updateStats(url))
-
 Promise
   .all(urls.map(url =>
     fetch(url)
       .then(updateStats)
-      // .then(res => console.log(res.statusText))
-      // .then(res => res.ok ? res.text().catch(err => err) : new Error())
-      // .then(res => {
-      //   // console.log(`***\n\n\n${url}\n\n\n***`)
-      //   // console.log(res.slice(0,100))
-
-      //   updateStats(url)
-      // })
       .catch(err => err)
   ))
-  // .then(res => Promise.all(
-  //   res.map(r => r instanceof Error ? r : r.text().catch(err => err))
-  // ))
   .then(res => {
-    // console.log(res)
     console.log(stats)
+    console.log(`\nStats:\n`)
+    console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(2) * 100}% (${stats.robots} of ${domains.length})`)
+    console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(2) * 100}% (${stats.humans} of ${domains.length})`)
+    console.log(`security.txt:\t${(stats.security / domains.length).toFixed(2) * 100}% (${stats.security} of ${domains.length})`)
   })
   .catch(err => console.log(err))
-
-
