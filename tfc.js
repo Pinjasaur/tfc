@@ -5,6 +5,7 @@ const {
 
 // NPM packages
 const fetch = require('node-fetch')
+const parse = require('url-parse')
 
 // Utils
 const trimAndUnique = arr => arr.map(i => i.trim()).filter(i => i !== "").filter((x, i, a) => a.indexOf(x) === i)
@@ -31,11 +32,12 @@ const go = async res => {
   }
 
   console.log(`Crawling ${res.url}... OK (${res.status})`)
+  const path = parse(res.url).pathname.toLowerCase()
 
   stats.total++
-  if (res.url.endsWith('robots.txt'))   stats.robots++
-  if (res.url.endsWith('humans.txt'))   stats.humans++
-  if (res.url.endsWith('security.txt')) stats.security++
+  if (path.endsWith('robots.txt'))   stats.robots++
+  if (path.endsWith('humans.txt'))   stats.humans++
+  if (path.endsWith('security.txt')) stats.security++
 
   return res.text().catch(err => err)
 }
@@ -46,7 +48,7 @@ const domains = trimAndUnique(readFileSync('domains.txt').toString().split('\n')
 const urls = files.reduce((acc, file) => acc.concat(domains.map(domain => `http://${domain}${file}`)), [])
 
 /**
-  The above code has the identical functionality as:
+  The above code is functionally equivalent to:
 
   for (const domain of domains) {
     for (const file of files) {
