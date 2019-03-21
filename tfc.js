@@ -4,44 +4,32 @@ const {
 } = require('fs')
 
 // NPM packages
-const fetch = require('node-fetch')
+const axios = require('axios')
 const parse = require('url-parse')
 
 // Utils
 const trimAndUnique = arr => arr.map(i => i.trim()).filter(i => i !== "").filter((x, i, a) => a.indexOf(x) === i)
-const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const go = async res => {
 
-  // HTTP status good?
-  if (!res.ok) {
-    console.log(`Crawling ${res.url}... NOT OK (${res.status})`)
-    return
-  }
+  stats.total++
+  const url = res.request.res.responseUrl
 
   // Content type a text file?
-  if (!res.headers.get('content-type').toLowerCase().includes('text/plain')) {
-    console.log(`Crawling ${res.url}... NOT OK (${res.status})`)
-    return
-  }
+  if (!res.headers['content-type'].toLowerCase().includes('text/plain')) return
 
   // Probably not an HTML document?
-  const text = await res.text().catch(err => err)
-  if (/^<!doctype html/i.test(text.trim())) {
-    console.log(`Crawling ${res.url}... NOT OK (${res.status})`)
-    return
-  }
+  if (/^<!doctype html/i.test(res.data.trim())) return
 
-  console.log(`Crawling ${res.url}... OK (${res.status})`)
-  const path = parse(res.url).pathname.toLowerCase()
+  const path = parse(url).pathname.toLowerCase()
 
-  stats.total++
   if (path.endsWith('robots.txt'))   stats.robots++
   if (path.endsWith('humans.txt'))   stats.humans++
   if (path.endsWith('security.txt')) stats.security++
 
-  return res.text().catch(err => err)
+  return res
 }
 
+const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const files = ['/robots.txt', '/humans.txt', '/.well-known/security.txt']
 const domains = trimAndUnique(readFileSync('domains.txt').toString().split('\n'))
 
@@ -60,22 +48,23 @@ const urls = files.reduce((acc, file) => acc.concat(domains.map(domain => `http:
 console.log(`Crawling ${domains.length} domain(s) (total of ${domains.length * files.length} request(s))...`)
 
 const opts = {
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0'
-  },
-  timeout: 10 * 1000
+  headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0' },
+  maxRedirects: 20,
+  timeout: 60 * 1000
 }
 
-Promise
+let update = setInterval(() => console.log(`${stats.total} responses...`), 5 * 1000)
+
+axios
   .all(urls.map(url =>
-    fetch(url, opts)
+    axios(url, opts)
       .then(go)
-      .catch(err => err)
+      .catch(err => { stats.total++; return err })
   ))
-  .then(res => {
-    console.log(`Done.\n`)
+  .then(axios.spread(function (...reqs) {
+    clearInterval(update)
+    console.log(`Done (${stats.total} responses).\n`)
     console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(2) * 100}% (${stats.robots} of ${domains.length})`)
     console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(2) * 100}% (${stats.humans} of ${domains.length})`)
     console.log(`security.txt:\t${(stats.security / domains.length).toFixed(2) * 100}% (${stats.security} of ${domains.length})`)
-  })
-  .catch(err => console.log(err))
+  }))
