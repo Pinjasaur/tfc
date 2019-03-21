@@ -28,6 +28,18 @@ const go = async res => {
 
   return res
 }
+const done = () => {
+  clearInterval(update)
+  console.log(`Done (${stats.total} responses).\n`)
+  console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(2) * 100}% (${stats.robots} of ${domains.length})`)
+  console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(2) * 100}% (${stats.humans} of ${domains.length})`)
+  console.log(`security.txt:\t${(stats.security / domains.length).toFixed(2) * 100}% (${stats.security} of ${domains.length})`)
+}
+
+process.on('SIGINT', () => {
+  done()
+  process.exit()
+})
 
 const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const files = ['/robots.txt', '/humans.txt', '/.well-known/security.txt']
@@ -50,7 +62,7 @@ console.log(`Crawling ${domains.length} domain(s) (total of ${domains.length * f
 const opts = {
   headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0' },
   maxRedirects: 20,
-  timeout: 60 * 1000
+  // timeout: 5 * 60 * 1000
 }
 
 let update = setInterval(() => console.log(`${stats.total} responses...`), 5 * 1000)
@@ -61,10 +73,4 @@ axios
       .then(go)
       .catch(err => { stats.total++; return err })
   ))
-  .then(axios.spread(function (...reqs) {
-    clearInterval(update)
-    console.log(`Done (${stats.total} responses).\n`)
-    console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(2) * 100}% (${stats.robots} of ${domains.length})`)
-    console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(2) * 100}% (${stats.humans} of ${domains.length})`)
-    console.log(`security.txt:\t${(stats.security / domains.length).toFixed(2) * 100}% (${stats.security} of ${domains.length})`)
-  }))
+  .then(axios.spread(done))
