@@ -62,7 +62,8 @@ console.log(`Crawling ${domains.length} domain(s) (total of ${domains.length * f
 const opts = {
   headers: {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0'
-  }
+  },
+  timeout: 10 * 1000
 }
 
 Promise
