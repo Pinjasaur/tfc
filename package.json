@@ -11,6 +11,8 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.3",
     "url-parse": "^1.4.4"
   }
 }
