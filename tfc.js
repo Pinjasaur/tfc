@@ -10,7 +10,6 @@ const parse = require('url-parse')
 // Utils
 const trimAndUnique = arr => arr.map(i => i.trim()).filter(i => i !== "").filter((x, i, a) => a.indexOf(x) === i)
 const go = async res => {
-
   stats.total++
   const url = res.request.res.responseUrl
 
@@ -31,10 +30,11 @@ const go = async res => {
 const done = () => {
   clearInterval(update)
   console.log(`Done (${stats.total} responses).\n`)
-  console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(2) * 100}% (${stats.robots} of ${domains.length})`)
-  console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(2) * 100}% (${stats.humans} of ${domains.length})`)
-  console.log(`security.txt:\t${(stats.security / domains.length).toFixed(2) * 100}% (${stats.security} of ${domains.length})`)
+  console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(4) * 100}% (${stats.robots} of ${domains.length})`)
+  console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(4) * 100}% (${stats.humans} of ${domains.length})`)
+  console.log(`security.txt:\t${(stats.security / domains.length).toFixed(4) * 100}% (${stats.security} of ${domains.length})`)
 }
+const write = (domain, file, data) =>
 
 process.on('SIGINT', () => {
   done()

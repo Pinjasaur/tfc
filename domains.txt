@@ -1,1 +1,1 @@
-domains-1k.txt
+domains-100.txt
