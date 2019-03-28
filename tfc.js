@@ -45,6 +45,8 @@ const done = results => {
 }
 const write = (domain, file, data) => writeFile(`files/${domain}_${file}.txt`, data, (err) => err ? console.log(err) : noop())
 
+// Gracefully exit on Ctrl + C
+// Useful for long-running requests that don't respond
 process.on('SIGINT', () => {
   done()
   process.exit()

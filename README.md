@@ -29,6 +29,10 @@ Then, grab the dependencies & start it up:
 npm install && npm start
 ```
 
+Not all requests receive a response & hang indefinitely. If it's been a while,
+just <kbd>Ctrl + C</kbd> the process, which will print out the stats before
+exiting.
+
 ## Thanks
 
 [David][david].
