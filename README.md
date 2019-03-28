@@ -7,15 +7,23 @@ pseudo-standard text files:
 - [`/humans.txt`][humans]
 - [`/.well-known/security.txt`][security]
 
-Given a [`domains.txt`](/domains.txt) file containing one domain per line, the
-Node.js script will fire off requests for each of the files. Given network I/O
-is the constraint, this can take a while.
+Given a domains.txt file containing one domain per line, the Node.js script will
+fire off requests for each of the files. Given network I/O is the constraint,
+this can take a while.
 
 Redirects are capped at 20 and validity is based off the HTTP status code,
 Content-Type, and first few values of the response data. After completing, the
 statistics will be printed out.
 
 ## Usage
+
+Make a domains.txt by making your own or symlinking one of the provided:
+
+```
+ln -s domains-faang.txt domains.txt
+```
+
+Then, grab the dependencies & start it up:
 
 ```
 npm install && npm start

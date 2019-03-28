@@ -1,1 +1,1 @@
-domains-100.txt
+domains-faang.txt
