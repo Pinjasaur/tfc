@@ -3,9 +3,9 @@
 To quench my curiousity, I wanted to gauge the usage & adoption of the following
 pseudo-standard text files:
 
-- [`/robots.txt`][robots]
-- [`/humans.txt`][humans]
-- [`/.well-known/security.txt`][security]
+- [`robots.txt`][robots]
+- [`humans.txt`][humans]
+- [`.well-known/security.txt`][security]
 
 Given a domains.txt file containing one domain per line, the Node.js script will
 fire off requests for each of the files. Given network I/O is the constraint,
