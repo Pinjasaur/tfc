@@ -13,7 +13,8 @@ this can take a while.
 
 Redirects are capped at 20 and validity is based off the HTTP status code,
 Content-Type, and first few values of the response data. After completing, the
-statistics will be printed out.
+statistics will be printed out. Valid text files found will be written to
+`files/`, which is created & wiped for you each time the script is started.
 
 ## Usage
 

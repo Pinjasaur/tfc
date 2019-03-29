@@ -66,7 +66,7 @@ const urls = files.reduce((acc, file) => acc.concat(domains.map(domain => `http:
 
   for (const domain of domains) {
     for (const file of files) {
-      urls.push(`http://${domain}${file}`)
+      urls.push(`http://${domain}/${file}`)
     }
   }
 */
@@ -74,8 +74,10 @@ const urls = files.reduce((acc, file) => acc.concat(domains.map(domain => `http:
 console.log(`Crawling ${domains.length} domain(s) (total of ${domains.length * files.length} request(s))...`)
 
 const opts = {
+  // UA taken from an actual browser off my machine
   headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0' },
   maxRedirects: 20,
+  // Static or dynamic timeouts are useful if you don't want to babysit it
   // timeout: 5 * 60 * 1000
   // timeout: ((domains.length * 3) / 10) * 1000
 }
