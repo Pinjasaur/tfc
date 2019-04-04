@@ -64,7 +64,7 @@ const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const files = ['robots.txt', 'humans.txt', '.well-known/security.txt']
 const domains = trimAndUnique(readFileSync('domains.txt').toString().split('\n'))
 
-const urls = domains.reduce((acc, domain) => acc.concat(files.map(file => `http://${file}/${domain}`)), [])
+const urls = domains.reduce((acc, domain) => acc.concat(files.map(file => `http://${domain}/${file}`)), [])
 
 /**
   The above code is functionally equivalent to:
