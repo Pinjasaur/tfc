@@ -23,7 +23,7 @@ const go = res => {
 
   // Not something clearly no bueno
   const blacklist = ['', '{}', 'not found', 'request caught']
-  if (blacklist.includes(res.data.trim())) return
+  if (blacklist.includes(res.data.toLowerCase().trim())) return
 
   const url  = res.request.res.responseUrl
   const path = parse(url).pathname.toLowerCase()
@@ -52,14 +52,19 @@ process.on('SIGINT', () => {
   process.exit()
 })
 
-rimraf.sync('files')
-mkdirp.sync('files')
+try {
+  rimraf.sync('files')
+  mkdirp.sync('files')
+} catch (e) {
+  console.log('Error removing & creating "files/"')
+  process.exit()
+}
 
 const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const files = ['robots.txt', 'humans.txt', '.well-known/security.txt']
 const domains = trimAndUnique(readFileSync('domains.txt').toString().split('\n'))
 
-const urls = files.reduce((acc, file) => acc.concat(domains.map(domain => `http://${domain}/${file}`)), [])
+const urls = domains.reduce((acc, domain) => acc.concat(files.map(file => `http://${file}/${domain}`)), [])
 
 /**
   The above code is functionally equivalent to:
