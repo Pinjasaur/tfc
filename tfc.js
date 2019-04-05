@@ -11,7 +11,6 @@ const mkdirp = require('mkdirp')
 const rimraf = require('rimraf')
 
 // Utils
-const noop = () => {}
 const trimAndUnique = arr => arr.map(i => i.trim()).filter(i => i !== "").filter((x, i, a) => a.indexOf(x) === i)
 const go = res => {
   stats.total++
@@ -43,7 +42,7 @@ const done = results => {
   console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(4) * 100}% (${stats.humans} of ${domains.length})`)
   console.log(`security.txt:\t${(stats.security / domains.length).toFixed(4) * 100}% (${stats.security} of ${domains.length})`)
 }
-const write = (domain, file, data) => writeFile(`files/${domain}_${file}.txt`, data, (err) => err ? console.log(err) : noop())
+const write = (domain, file, data) => writeFile(`files/${domain}_${file}.txt`, data, (err) => err && console.log(err))
 
 // Gracefully exit on Ctrl + C
 // Useful for long-running requests that don't respond
