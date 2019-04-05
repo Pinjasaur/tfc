@@ -62,6 +62,7 @@ try {
 
 const stats = { total: 0, robots: 0, humans: 0, security: 0 }
 const files = ['robots.txt', 'humans.txt', '.well-known/security.txt']
+console.log('Loading domains...')
 const domains = trimAndUnique(readFileSync('domains.txt').toString().split('\n'))
 
 const urls = domains.reduce((acc, domain) => acc.concat(files.map(file => `http://${domain}/${file}`)), [])
@@ -87,7 +88,10 @@ const opts = {
   // timeout: ((domains.length * 3) / 10) * 1000
 }
 
-let update = setInterval(() => console.log(`${stats.total} responses...`), 5 * 1000)
+let update = setInterval(() => {
+  console.log(`${stats.total} (+${stats.total - (stats.lastTotal || 0)}) responses...`)
+  stats.lastTotal = stats.total
+}, 5 * 1000)
 
 axios
   .all(urls.map(url =>
