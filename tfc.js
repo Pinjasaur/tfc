@@ -52,6 +52,7 @@ process.on('SIGINT', () => {
 })
 
 try {
+  console.log('Removing & creating "files/"...')
   rimraf.sync('files')
   mkdirp.sync('files')
 } catch (e) {
@@ -88,7 +89,7 @@ const opts = {
 }
 
 let update = setInterval(() => {
-  console.log(`${stats.total} (+${stats.total - (stats.lastTotal || 0)}) responses...`)
+  process.stdout.write(`\r${stats.total} (+${stats.total - (stats.lastTotal || 0)}) responses...`)
   stats.lastTotal = stats.total
 }, 5 * 1000)
 
