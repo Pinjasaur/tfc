@@ -37,7 +37,7 @@ const go = res => {
 }
 const done = results => {
   clearInterval(update)
-  console.log(`Done (${stats.total} responses).\n`)
+  console.log(`\nDone (${stats.total} responses).\n`)
   console.log(`robots.txt:\t${(stats.robots / domains.length).toFixed(4) * 100}% (${stats.robots} of ${domains.length})`)
   console.log(`humans.txt:\t${(stats.humans / domains.length).toFixed(4) * 100}% (${stats.humans} of ${domains.length})`)
   console.log(`security.txt:\t${(stats.security / domains.length).toFixed(4) * 100}% (${stats.security} of ${domains.length})`)
