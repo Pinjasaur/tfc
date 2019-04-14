@@ -93,10 +93,35 @@ let update = setInterval(() => {
   stats.lastTotal = stats.total
 }, 5 * 1000)
 
-axios
-  .all(urls.map(url =>
-    axios(url, opts)
-      .then(go)
-      .catch(err => { stats.total++; return err })
-  ))
-  .then(axios.spread(done))
+const chunk = (array, batchSize = 5) => {
+  const chunked = [];
+  for (let i = 0; i < array.length; i += batchSize) {
+    chunked.push(array.slice(i, i + batchSize))
+  }
+
+  return chunked;
+}
+
+const reducer = (chain, batch) => chain
+  .then(() => Promise.all(
+    batch.map(url =>
+      axios(url, opts)
+        .then(go)
+        .catch(err => { stats.total++; return err })
+    )
+  ));
+
+// execute batches of 100 urls in parralel
+chunk(urls, 100)
+  .reduce(
+    reducer,
+    Promise.resolve()
+  ).then(done);
+
+// axios
+//   .all(urls.map(url =>
+//     axios(url, opts)
+//       .then(go)
+//       .catch(err => { stats.total++; return err })
+//   ))
+//   .then(axios.spread(done))
